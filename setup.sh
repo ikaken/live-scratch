@@ -23,7 +23,16 @@ fi
 GUI_JSX="$DIR/packages/scratch-gui/src/containers/gui.jsx"
 if ! grep -q 'window.vm' "$GUI_JSX"; then
   echo "[setup] Patching gui.jsx..."
-  sed -i '' 's/this.props.onVmInit(this.props.vm);/this.props.onVmInit(this.props.vm);\n        window.vm = this.props.vm;/' "$GUI_JSX"
+  node -e "
+    const fs = require('fs');
+    const f = process.argv[1];
+    let s = fs.readFileSync(f, 'utf8');
+    s = s.replace(
+      'this.props.onVmInit(this.props.vm);',
+      'this.props.onVmInit(this.props.vm);\n        window.vm = this.props.vm;'
+    );
+    fs.writeFileSync(f, s);
+  " "$GUI_JSX"
 fi
 
 # Patch: add @scratch/scratch-vm type declaration
