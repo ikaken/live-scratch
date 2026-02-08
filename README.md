@@ -24,10 +24,10 @@ live-scratch は `workspace/project.json` をプレーンなJSONとして公開�
 git clone https://github.com/champierre/live-scratch.git
 cd live-scratch
 npm install
-npm run setup   # scratch-editorのclone・パッチ適用・ビルドを自動実行
 ```
 
-`npm run setup` は以下を自動で行います：
+`npm install` は依存パッケージのインストール後、自動で以下を実行します：
+
 1. [scratch-editor](https://github.com/scratchfoundation/scratch-editor) をバージョン固定（`81d16ac24`）で clone
 2. `window.vm` 公開パッチと TypeScript 型宣言パッチを適用
 3. `npm install` と `scratch-gui` のビルド
@@ -35,15 +35,27 @@ npm run setup   # scratch-editorのclone・パッチ適用・ビルドを自動�
 ## 使い方
 
 ```bash
-node server.js <file.sb3> [--port 3333]
+npm start
 ```
 
-1. 指定したsb3ファイルが `workspace/` に展開される（`project.json` は整形済み）
+1. デフォルトプロジェクト（Scratchの初期状態）が `workspace/` に展開される
 2. ブラウザが自動でScratchエディタを開く
 3. `workspace/project.json` やアセットファイルをテキストエディタで編集・保存
 4. 変更が即座にブラウザのScratchエディタに反映される
 
 画面右上の丸いインジケーターで接続状態を確認できる（緑=接続中、赤=切断）。
+
+既存のsb3ファイルから始める場合：
+
+```bash
+npm start -- myproject.sb3
+```
+
+ポートを変更する場合は `--port` オプションを指定：
+
+```bash
+npm start -- --port 8080
+```
 
 ## アーキテクチャ
 

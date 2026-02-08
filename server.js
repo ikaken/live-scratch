@@ -23,18 +23,16 @@ for (let i = 0; i < args.length; i++) {
     }
 }
 
-if (!sb3Path) {
-    console.error('Usage: node server.js <file.sb3> [--port 3333]');
-    process.exit(1);
-}
-
-sb3Path = path.resolve(sb3Path);
-if (!fs.existsSync(sb3Path)) {
-    console.error(`File not found: ${sb3Path}`);
-    process.exit(1);
+if (sb3Path) {
+    sb3Path = path.resolve(sb3Path);
+    if (!fs.existsSync(sb3Path)) {
+        console.error(`File not found: ${sb3Path}`);
+        process.exit(1);
+    }
 }
 
 const WORKSPACE = path.join(process.cwd(), 'workspace');
+const DEFAULT_PROJECT = path.join(__dirname, 'default-project');
 const BUILD_DIR = path.join(__dirname, 'scratch-editor', 'packages', 'scratch-gui', 'build');
 const CLIENT_DIR = path.join(__dirname, 'client');
 
@@ -97,9 +95,23 @@ async function buildSb3() {
     return zip.generateAsync({type: 'arraybuffer', compression: 'STORE'});
 }
 
+// --- Copy default project to workspace ---
+function copyDefaultProject() {
+    fs.mkdirSync(WORKSPACE, {recursive: true});
+    const files = fs.readdirSync(DEFAULT_PROJECT);
+    for (const file of files) {
+        fs.copyFileSync(path.join(DEFAULT_PROJECT, file), path.join(WORKSPACE, file));
+    }
+    console.log(`Copied ${files.length} files from default-project/ to workspace/`);
+}
+
 // --- Server setup ---
 async function start() {
-    await extractSb3(sb3Path);
+    if (sb3Path) {
+        await extractSb3(sb3Path);
+    } else if (!fs.existsSync(path.join(WORKSPACE, 'project.json'))) {
+        copyDefaultProject();
+    }
 
     // Build initial sb3
     let currentSb3 = await buildSb3();
