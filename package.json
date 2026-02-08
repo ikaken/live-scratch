@@ -1,0 +1,15 @@
+{
+  "name": "live-scratch",
+  "version": "0.1.0",
+  "scripts": {
+    "setup": "cd scratch-editor && npm install && npm run build:dev --workspace=packages/scratch-gui",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "ws": "^8.18.0",
+    "chokidar": "^4.0.0",
+    "jszip": "^3.10.0",
+    "open": "^10.0.0"
+  }
+}
