@@ -1,10 +1,10 @@
-# live-scratch
+# Live Scratch
 
 sb3ファイルをテキストエディタで編集し、変更を即座にブラウザ上のScratchエディタに反映するツール。
 
-![Demo](demo.gif)
-
 ## Scratch x Vibe Coding
+
+![Demo](demo.gif)
 
 live-scratch は `workspace/project.json` をプレーンなJSONとして公開します。つまり **AIコーディングエージェントで直接 Scratch プロジェクトを編集できます。**
 
