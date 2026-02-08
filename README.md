@@ -18,19 +18,6 @@ live-scratch は `workspace/project.json` をプレーンなJSONとして公開�
 
 ブロックを手でドラッグする代わりに、会話でScratchプログラミング。結果はリアルタイムにブラウザで確認できます。
 
-## アーキテクチャ
-
-```
-[テキストエディタ] → 編集 → [workspace/project.json + assets]
-                                    ↓ chokidar監視
-                            [Node.js Server]
-                            (Express + WebSocket + chokidar)
-                                    ↓ WebSocket (ArrayBuffer)
-                            [Browser: Scratch GUI + live-reload.js]
-                                    ↓ vm.loadProject(arrayBuffer)
-                            [Scratch エディタが即座に更新]
-```
-
 ## セットアップ
 
 ```bash
@@ -57,6 +44,19 @@ node server.js <file.sb3> [--port 3333]
 4. 変更が即座にブラウザのScratchエディタに反映される
 
 画面右上の丸いインジケーターで接続状態を確認できる（緑=接続中、赤=切断）。
+
+## アーキテクチャ
+
+```
+[テキストエディタ] → 編集 → [workspace/project.json + assets]
+                                    ↓ chokidar監視
+                            [Node.js Server]
+                            (Express + WebSocket + chokidar)
+                                    ↓ WebSocket (ArrayBuffer)
+                            [Browser: Scratch GUI + live-reload.js]
+                                    ↓ vm.loadProject(arrayBuffer)
+                            [Scratch エディタが即座に更新]
+```
 
 ## 注意事項
 

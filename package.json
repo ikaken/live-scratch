@@ -1,6 +1,7 @@
 {
   "name": "live-scratch",
   "version": "0.1.0",
+  "license": "MIT",
   "scripts": {
     "setup": "bash setup.sh",
     "start": "node server.js"
