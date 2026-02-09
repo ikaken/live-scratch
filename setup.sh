@@ -50,4 +50,18 @@ npm install
 echo "[setup] Building scratch-gui..."
 npm run build:dev --workspace=packages/scratch-gui
 
+cd ..
+
+# Inject live-reload.js into the build
+BUILD_DIR="$DIR/packages/scratch-gui/build"
+INDEX_HTML="$BUILD_DIR/index.html"
+
+echo "[setup] Injecting live-reload.js into build..."
+cp client/live-reload.js "$BUILD_DIR/live-reload.js"
+
+if ! grep -q 'live-reload.js' "$INDEX_HTML"; then
+  # Inject script tag before </body>
+  sed -i '' 's|</body>|<script src="live-reload.js"></script></body>|' "$INDEX_HTML"
+fi
+
 echo "[setup] Done!"
