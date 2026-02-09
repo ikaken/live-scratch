@@ -2,7 +2,7 @@
 
 [日本語](README_ja.md)
 
-A tool that lets you edit sb3 files in a text editor and instantly reflects changes in the Scratch editor running in your browser.
+A tool for bi-directional live sync between `workspace/` files and the Scratch editor in your browser. Edit sb3 project files in a text editor and see changes reflected instantly — or make changes in the Scratch editor and have them written back to `workspace/` automatically.
 
 ## Scratch x Vibe Coding
 
@@ -46,6 +46,7 @@ npm start
 2. Your browser automatically opens the Scratch editor
 3. Edit and save `workspace/project.json` or asset files with your text editor
 4. Changes are instantly reflected in the Scratch editor in the browser
+5. Changes made in the Scratch editor (adding blocks, sprites, costumes, sounds, etc.) are automatically saved back to `workspace/`
 
 A circular indicator in the top-right corner shows the connection status (green = connected, red = disconnected).
 
@@ -65,14 +66,19 @@ npm start -- --port 8080
 
 ```
 [Text Editor] → edit → [workspace/project.json + assets]
-                                ↓ chokidar watch
+                                ↕ bi-directional sync
                         [Node.js Server]
                         (Express + WebSocket + chokidar)
-                                ↓ WebSocket (ArrayBuffer)
+                                ↕ WebSocket (ArrayBuffer)
                         [Browser: Scratch GUI + live-reload.js]
-                                ↓ vm.loadProject(arrayBuffer)
-                        [Scratch editor updates instantly]
+                                ↕ vm.loadProject / vm.saveProjectSb3
+                        [Scratch editor]
 ```
+
+- **workspace → browser**: chokidar watches file changes, builds sb3, and sends it via WebSocket
+- **browser → workspace**: listens for `PROJECT_CHANGED` events, debounces (1s), sends sb3 back to server, which extracts it to `workspace/`
+- **Loop prevention**: both client and server use ignore flags with timeouts to prevent infinite sync loops
+- **Multi-tab support**: changes from one client are broadcast to all other connected clients
 
 ## Notes
 

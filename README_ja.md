@@ -1,6 +1,8 @@
 # Live Scratch
 
-sb3ファイルをテキストエディタで編集し、変更を即座にブラウザ上のScratchエディタに反映するツール。
+[English](README.md)
+
+`workspace/` ファイルとブラウザ上のScratchエディタを双方向にライブ同期するツール。テキストエディタでsb3プロジェクトファイルを編集すると即座にブラウザに反映され、Scratchエディタでの変更も自動的に `workspace/` に書き戻されます。
 
 ## Scratch x Vibe Coding
 
@@ -44,6 +46,7 @@ npm start
 2. ブラウザが自動でScratchエディタを開く
 3. `workspace/project.json` やアセットファイルをテキストエディタで編集・保存
 4. 変更が即座にブラウザのScratchエディタに反映される
+5. Scratchエディタでの変更（ブロック追加、スプライト変更、コスチューム・サウンド追加など）は自動的に `workspace/` に保存される
 
 画面右上の丸いインジケーターで接続状態を確認できる（緑=接続中、赤=切断）。
 
@@ -63,14 +66,19 @@ npm start -- --port 8080
 
 ```
 [テキストエディタ] → 編集 → [workspace/project.json + assets]
-                                    ↓ chokidar監視
+                                    ↕ 双方向同期
                             [Node.js Server]
                             (Express + WebSocket + chokidar)
-                                    ↓ WebSocket (ArrayBuffer)
+                                    ↕ WebSocket (ArrayBuffer)
                             [Browser: Scratch GUI + live-reload.js]
-                                    ↓ vm.loadProject(arrayBuffer)
-                            [Scratch エディタが即座に更新]
+                                    ↕ vm.loadProject / vm.saveProjectSb3
+                            [Scratch エディタ]
 ```
+
+- **workspace → ブラウザ**: chokidarがファイル変更を監視し、sb3をビルドしてWebSocket経由で送信
+- **ブラウザ → workspace**: `PROJECT_CHANGED` イベントをリッスンし、デバウンス（1秒）後にsb3をサーバーに送信、サーバーが `workspace/` に展開
+- **ループ防止**: クライアント・サーバー両方でフラグとタイムアウトによる無限同期ループ防止機構を実装
+- **複数タブ対応**: あるクライアントからの変更は他の接続中クライアントすべてにブロードキャスト
 
 ## 注意事項
 
