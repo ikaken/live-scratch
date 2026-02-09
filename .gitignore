@@ -2,3 +2,4 @@ node_modules/
 workspace/
 scratch-editor/
 *.sb3
+src-tauri/target/

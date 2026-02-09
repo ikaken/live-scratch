@@ -2,76 +2,84 @@
     'use strict';
 
     var POLL_INTERVAL = 100;
-    var RECONNECT_DELAY = 2000;
     var SAVE_DEBOUNCE = 1000;
-    var wsUrl = 'ws://' + location.host + '/';
-    var ws = null;
-    var indicator = null;
     var ignoreChanges = false;
     var saveTimer = null;
+    var indicator = null;
 
     function createIndicator() {
         indicator = document.createElement('div');
         indicator.style.cssText =
             'position:fixed;top:8px;right:8px;width:12px;height:12px;' +
-            'border-radius:50%;background:#e44;z-index:999999;' +
+            'border-radius:50%;background:#4c4;z-index:999999;' +
             'transition:background 0.3s;pointer-events:none;';
         document.body.appendChild(indicator);
     }
 
-    function setConnected(connected) {
-        if (indicator) {
-            indicator.style.background = connected ? '#4c4' : '#e44';
+    function base64ToArrayBuffer(base64) {
+        var binaryString = atob(base64);
+        var len = binaryString.length;
+        var bytes = new Uint8Array(len);
+        for (var i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
         }
+        return bytes.buffer;
     }
 
-    function connect() {
-        ws = new WebSocket(wsUrl);
-        ws.binaryType = 'arraybuffer';
+    function arrayBufferToBase64(buffer) {
+        var bytes = new Uint8Array(buffer);
+        var binary = '';
+        for (var i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+    }
 
-        ws.onopen = function () {
-            console.log('[live-scratch] connected');
-            setConnected(true);
-        };
+    function loadProject(arrayBuffer) {
+        var editingTarget = window.vm.editingTarget ?
+            window.vm.editingTarget.id : null;
 
-        ws.onmessage = function (event) {
-            if (!(event.data instanceof ArrayBuffer)) return;
-            console.log('[live-scratch] reloading project (' + event.data.byteLength + ' bytes)');
+        ignoreChanges = true;
+        if (saveTimer) {
+            clearTimeout(saveTimer);
+            saveTimer = null;
+        }
 
-            var editingTarget = window.vm.editingTarget ?
-                window.vm.editingTarget.id : null;
-
-            ignoreChanges = true;
-            if (saveTimer) {
-                clearTimeout(saveTimer);
-                saveTimer = null;
-            }
-
-            window.vm.loadProject(event.data).then(function () {
-                console.log('[live-scratch] project loaded');
-                if (editingTarget) {
-                    try {
-                        window.vm.setEditingTarget(editingTarget);
-                    } catch (e) {
-                        // target may no longer exist
-                    }
+        window.vm.loadProject(arrayBuffer).then(function () {
+            console.log('[live-scratch] project loaded');
+            if (editingTarget) {
+                try {
+                    window.vm.setEditingTarget(editingTarget);
+                } catch (e) {
+                    // target may no longer exist
                 }
-                setTimeout(function () { ignoreChanges = false; }, 500);
-            }).catch(function (err) {
-                console.error('[live-scratch] load error:', err);
-                ignoreChanges = false;
-            });
-        };
+            }
+            setTimeout(function () { ignoreChanges = false; }, 500);
+        }).catch(function (err) {
+            console.error('[live-scratch] load error:', err);
+            ignoreChanges = false;
+        });
+    }
 
-        ws.onclose = function () {
-            console.log('[live-scratch] disconnected, reconnecting in ' + RECONNECT_DELAY + 'ms');
-            setConnected(false);
-            setTimeout(connect, RECONNECT_DELAY);
-        };
+    function setupTauri() {
+        var invoke = window.__TAURI__.core.invoke;
+        var listen = window.__TAURI__.event.listen;
 
-        ws.onerror = function () {
-            ws.close();
-        };
+        // Load initial project
+        invoke('get_initial_sb3').then(function (base64) {
+            console.log('[live-scratch] loading initial project');
+            var arrayBuffer = base64ToArrayBuffer(base64);
+            loadProject(arrayBuffer);
+        }).catch(function (err) {
+            console.error('[live-scratch] failed to load initial project:', err);
+        });
+
+        // Listen for file-change updates from Rust backend
+        listen('sb3-updated', function (event) {
+            console.log('[live-scratch] received sb3-updated event');
+            var arrayBuffer = base64ToArrayBuffer(event.payload);
+            loadProject(arrayBuffer);
+        });
 
         // Listen for project changes made in the Scratch editor
         window.vm.on('PROJECT_CHANGED', function () {
@@ -80,16 +88,15 @@
             saveTimer = setTimeout(function () {
                 saveTimer = null;
                 if (ignoreChanges) return;
-                if (!ws || ws.readyState !== 1) return;
 
-                console.log('[live-scratch] saving project to server');
+                console.log('[live-scratch] saving project to backend');
                 window.vm.saveProjectSb3().then(function (blob) {
                     return blob.arrayBuffer();
                 }).then(function (buffer) {
-                    if (ws && ws.readyState === 1) {
-                        ws.send(buffer);
-                        console.log('[live-scratch] sent sb3 (' + buffer.byteLength + ' bytes)');
-                    }
+                    var base64 = arrayBufferToBase64(buffer);
+                    return invoke('save_project_from_editor', { sb3Base64: base64 });
+                }).then(function () {
+                    console.log('[live-scratch] project saved');
                 }).catch(function (err) {
                     console.error('[live-scratch] save error:', err);
                 });
@@ -98,9 +105,9 @@
     }
 
     function waitForVM() {
-        if (window.vm) {
+        if (window.vm && window.__TAURI__) {
             createIndicator();
-            connect();
+            setupTauri();
         } else {
             setTimeout(waitForVM, POLL_INTERVAL);
         }

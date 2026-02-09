@@ -4,13 +4,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "bash setup.sh",
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.21.0",
-    "ws": "^8.18.0",
-    "chokidar": "^4.0.0",
-    "jszip": "^3.10.0",
-    "open": "^10.0.0"
+    "tauri:dev": "cargo tauri dev",
+    "tauri:build": "cargo tauri build"
   }
 }
