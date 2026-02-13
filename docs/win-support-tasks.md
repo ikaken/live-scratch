@@ -11,4 +11,5 @@
     - [x] `lib.rs` の修正（macOSコード削除、Windows用に置換）
     - [x] `commands.rs` の修正（macOSコード削除、Windows用に置換）
 - [ ] 旧bashスクリプトの削除（setup.sh, cleanup-build.sh） <!-- id: 5 -->
-- [ ] 動作確認（Rustインストール後に `cargo check` と `npm run tauri:dev`） <!-- id: 4 -->
+- [x] Rustのインストール <!-- id: 6 -->
+- [ ] 動作確認（現在 `npm install` 実行中、完了後に `npm run tauri:dev`） <!-- id: 4 -->
