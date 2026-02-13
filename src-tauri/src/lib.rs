@@ -88,7 +88,7 @@ pub fn run() {
                 .accelerator("CmdOrCtrl+S")
                 .build(app_handle)?;
             let show_workspace =
-                MenuItemBuilder::with_id("show_workspace", "Show Workspace in Finder")
+                MenuItemBuilder::with_id("show_workspace", "Show Workspace in Explorer")
                     .accelerator("CmdOrCtrl+Shift+O")
                     .build(app_handle)?;
 
@@ -192,12 +192,9 @@ pub fn run() {
                     "show_workspace" => {
                         let handle = app_handle_clone.clone();
                         let state = handle.state::<WorkspacePath>();
-                        #[cfg(target_os = "macos")]
-                        {
-                            let _ = std::process::Command::new("open")
-                                .arg(&*state.0)
-                                .spawn();
-                        }
+                        let _ = std::process::Command::new("explorer")
+                            .arg(&*state.0)
+                            .spawn();
                     }
                     _ => {}
                 }

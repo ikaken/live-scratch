@@ -5,7 +5,7 @@
   "identifier": "com.live-scratch.app",
   "build": {
     "frontendDist": "../scratch-editor/packages/scratch-gui/build",
-    "beforeBundleCommand": "cd src-tauri && bash cleanup-build.sh"
+    "beforeBundleCommand": "node src-tauri/cleanup-build.js"
   },
   "app": {
     "withGlobalTauri": true,
@@ -24,19 +24,18 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["dmg", "app"],
+    "targets": [
+      "nsis",
+      "msi"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
-      "icons/icon.icns",
       "icons/icon.ico"
     ],
     "resources": {
       "../default-project": "default-project"
-    },
-    "macOS": {
-      "minimumSystemVersion": "10.15"
     }
   }
 }

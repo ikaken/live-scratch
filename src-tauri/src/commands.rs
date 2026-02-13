@@ -116,12 +116,9 @@ pub async fn export_sb3_file(
 
 #[tauri::command]
 pub fn open_workspace_in_finder(state: State<'_, WorkspacePath>) -> Result<(), String> {
-    #[cfg(target_os = "macos")]
-    {
-        std::process::Command::new("open")
-            .arg(&*state.0)
-            .spawn()
-            .map_err(|e| format!("Failed to open Finder: {}", e))?;
-    }
+    std::process::Command::new("explorer")
+        .arg(&*state.0)
+        .spawn()
+        .map_err(|e| format!("Failed to open Explorer: {}", e))?;
     Ok(())
 }
