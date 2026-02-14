@@ -4,7 +4,10 @@
   "license": "MIT",
   "scripts": {
     "prepare": "node setup.js",
-    "tauri:dev": "cargo tauri dev",
-    "tauri:build": "cargo tauri build"
+    "tauri:dev": "npx tauri dev",
+    "tauri:build": "npx tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.10.0"
   }
 }
