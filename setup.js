@@ -12,17 +12,17 @@ const DIR = 'scratch-editor';
 // Change to the directory where this script lives (project root)
 process.chdir(path.dirname(__filename));
 
-function run(cmd) {
+function run(cmd, options = {}) {
     console.log(`[setup] Running: ${cmd}`);
-    execSync(cmd, { stdio: 'inherit' });
+    execSync(cmd, { stdio: 'inherit', ...options });
 }
 
 // 1. Clone scratch-editor at pinned commit
 if (!fs.existsSync(DIR)) {
     console.log('[setup] Cloning scratch-editor...');
     run(`git clone --depth 1 "${REPO}" "${DIR}"`);
-    run(`git -C "${DIR}" fetch --depth 1 origin ${COMMIT}`);
-    run(`git -C "${DIR}" checkout ${COMMIT}`);
+    run(`git fetch --depth 1 origin ${COMMIT}`, { cwd: DIR });
+    run(`git checkout ${COMMIT}`, { cwd: DIR });
 } else {
     console.log('[setup] scratch-editor already exists, skipping clone');
 }
@@ -47,12 +47,24 @@ if (!typesDtsContent.includes('@scratch/scratch-vm')) {
     fs.appendFileSync(typesDtsPath, "declare module '@scratch/scratch-vm';\n");
 }
 
+// 3.5 Patch: fix package.json scripts for Windows (add cross-env)
+const guiPackageJsonPath = path.join(DIR, 'packages', 'scratch-gui', 'package.json');
+const guiPackageJsonContent = fs.readFileSync(guiPackageJsonPath, 'utf8');
+if (guiPackageJsonContent.includes('"build:dev": "BUILD_TYPE=dev webpack"')) {
+    console.log('[setup] Patching scratch-gui/package.json for Windows...');
+    const patched = guiPackageJsonContent.replace(
+        '"build:dev": "BUILD_TYPE=dev webpack"',
+        '"build:dev": "cross-env BUILD_TYPE=dev webpack"'
+    );
+    fs.writeFileSync(guiPackageJsonPath, patched);
+}
+
 // 4. Install dependencies and build
 console.log('[setup] Installing dependencies...');
-run(`npm install --prefix "${DIR}"`);
+run('npm install', { cwd: DIR });
 
 console.log('[setup] Building scratch-gui...');
-run(`npm run build:dev --workspace=packages/scratch-gui --prefix "${DIR}"`);
+run('npm run build:dev --workspace=packages/scratch-gui', { cwd: DIR });
 
 // 5. Inject live-reload.js into the build
 const buildDir = path.join(DIR, 'packages', 'scratch-gui', 'build');
