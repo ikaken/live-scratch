@@ -2,7 +2,7 @@
 
 [日本語](README_ja.md)
 
-A desktop app (macOS) for bi-directional live sync between project files and the Scratch editor. Edit sb3 project files in a text editor and see changes reflected instantly — or make changes in the Scratch editor and have them written back automatically.
+A desktop app (Windows) for bi-directional live sync between project files and the Scratch editor. Edit sb3 project files in a text editor and see changes reflected instantly — or make changes in the Scratch editor and have them written back automatically.
 
 ## Scratch x Vibe Coding
 
@@ -26,36 +26,12 @@ Instead of dragging blocks by hand, program Scratch through conversation. See th
 
 ## Supported Environments
 
-- macOS 10.15 (Catalina) or later
-- Apple Silicon (M1/M2/M3/M4) and Intel
-
-## Download
-
-Download the latest `.dmg` from [GitHub Releases](https://github.com/champierre/live-scratch/releases/latest).
-
-> This app is not code-signed. macOS will show "app is damaged" when you try to open it. Run the following command to fix this:
->
-> ```bash
-> xattr -cr "/Applications/Live Scratch.app"
-> ```
-
-## Usage
-
-1. Open the Live Scratch app
-2. A default project (Scratch's initial state) is created in `~/Documents/Live Scratch/`
-3. Edit `project.json` or asset files with your text editor or AI agent
-4. Changes are instantly reflected in the Scratch editor
-5. Changes made in the Scratch editor are automatically saved back to `~/Documents/Live Scratch/`
-
-### Menu
-
-- **File > Open SB3...** (`Cmd+O`) — Load an existing `.sb3` file
-- **File > Export SB3...** (`Cmd+S`) — Save the current project as `.sb3`
-- **File > Show Workspace in Finder** (`Cmd+Shift+O`) — Open `~/Documents/Live Scratch/` in Finder
+- Windows 10/11
+- (Original macOS version is available in previous commits)
 
 ## Setup (build from source)
 
-Prerequisites: [Node.js](https://nodejs.org/) and [Rust](https://www.rust-lang.org/tools/install)
+Prerequisites: [Node.js](https://nodejs.org/) and [Rust](https://www.rust-lang.org/tools/install) (with Visual C++ Build Tools).
 
 ```bash
 git clone https://github.com/champierre/live-scratch.git
@@ -63,11 +39,12 @@ cd live-scratch
 npm install
 ```
 
-`npm install` automatically performs the following via `setup.sh`:
+`npm install` automatically performs the following via `setup.js`:
 
 1. Clones [scratch-editor](https://github.com/scratchfoundation/scratch-editor) at a pinned version (`81d16ac24`)
 2. Applies patches to expose `window.vm` and fix TypeScript type declarations
-3. Runs `npm install` and builds `scratch-gui`
+3. Fixes scripts for Windows compatibility
+4. Runs `npm install` and builds `scratch-gui`
 
 Run in development mode:
 

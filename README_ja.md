@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-プロジェクトファイルとScratchエディタを双方向にライブ同期するデスクトップアプリ（macOS）。テキストエディタでsb3プロジェクトファイルを編集すると即座に反映され、Scratchエディタでの変更も自動的に書き戻されます。
+プロジェクトファイルとScratchエディタを双方向にライブ同期するデスクトップアプリ（Windows）。テキストエディタでsb3プロジェクトファイルを編集すると即座に反映され、Scratchエディタでの変更も自動的に書き戻されます。
 
 ## Scratch x Vibe Coding
 
@@ -26,22 +26,12 @@ live-scratch は `~/Documents/Live Scratch/` に `project.json` をプレーン�
 
 ## 対応環境
 
-- macOS 10.15 (Catalina) 以降
-- Apple Silicon (M1/M2/M3/M4) および Intel
-
-## ダウンロード
-
-最新の `.dmg` を [GitHub Releases](https://github.com/champierre/live-scratch/releases/latest) からダウンロードできます。
-
-> このアプリはコード署名されていません。開こうとすると「"Live Scratch.app"は壊れているため開けません」と表示されます。以下のコマンドを実行してから開いてください：
->
-> ```bash
-> xattr -cr "/Applications/Live Scratch.app"
-> ```
+- Windows 10/11
+- （macOS版は過去のコミットにて利用可能です）
 
 ## 使い方
 
-1. Live Scratch アプリを開く
+1. `npm run tauri:dev` でアプリを起動
 2. デフォルトプロジェクト（Scratchの初期状態）が `~/Documents/Live Scratch/` に作成される
 3. `project.json` やアセットファイルをテキストエディタやAIエージェントで編集
 4. 変更が即座にScratchエディタに反映される
@@ -49,13 +39,13 @@ live-scratch は `~/Documents/Live Scratch/` に `project.json` をプレーン�
 
 ### メニュー
 
-- **File > Open SB3...** (`Cmd+O`) — 既存の `.sb3` ファイルを読み込む
-- **File > Export SB3...** (`Cmd+S`) — 現在のプロジェクトを `.sb3` として保存
-- **File > Show Workspace in Finder** (`Cmd+Shift+O`) — `~/Documents/Live Scratch/` を Finder で開く
+- **File > Open SB3...** (`Ctrl+O`) — 既存の `.sb3` ファイルを読み込む
+- **File > Export SB3...** (`Ctrl+S`) — 現在のプロジェクトを `.sb3` として保存
+- **File > Show Workspace in Explorer** (`Ctrl+Shift+O`) — `~/Documents/Live Scratch/` をエクスプローラーで開く
 
 ## セットアップ（ソースからビルド）
 
-前提条件: [Node.js](https://nodejs.org/) と [Rust](https://www.rust-lang.org/tools/install)
+前提条件: [Node.js](https://nodejs.org/) と [Rust](https://www.rust-lang.org/tools/install) (Visual C++ Build Tools を含む)
 
 ```bash
 git clone https://github.com/champierre/live-scratch.git
@@ -63,11 +53,12 @@ cd live-scratch
 npm install
 ```
 
-`npm install` は `setup.sh` を通じて自動で以下を実行します：
+`npm install` は `setup.js` を通じて自動で以下を実行します：
 
 1. [scratch-editor](https://github.com/scratchfoundation/scratch-editor) をバージョン固定（`81d16ac24`）でクローン
 2. `window.vm` 公開パッチと TypeScript 型宣言パッチを適用
-3. `npm install` と `scratch-gui` のビルド
+3. Windows環境向けのビルドスクリプトの修正
+4. `npm install` と `scratch-gui` のビルド
 
 開発モードで実行：
 
