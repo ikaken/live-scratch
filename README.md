@@ -4,6 +4,8 @@
 
 A desktop app (Windows) for bi-directional live sync between project files and the Scratch editor. Edit sb3 project files in a text editor and see changes reflected instantly — or make changes in the Scratch editor and have them written back automatically.
 
+*Note: This project is a fork and modification of the original version released for macOS, adapted for use in Windows environments. It was implemented using "vibe coding," so please use it at your own risk.*
+
 ## Scratch x Vibe Coding
 
 [![Watch the demo on YouTube](https://img.youtube.com/vi/uoXJ0N3IdK0/maxresdefault.jpg)](https://www.youtube.com/watch?v=uoXJ0N3IdK0)
@@ -28,6 +30,20 @@ Instead of dragging blocks by hand, program Scratch through conversation. See th
 
 - Windows 10/11
 - (Original macOS version is available in previous commits)
+
+## How to Use
+
+1. Start the app with `npm run tauri:dev`
+2. A default project (Scratch's initial state) will be created in `~/Documents/Live Scratch/`
+3. Edit `project.json` or asset files with a text editor or AI agent
+4. Changes are instantly reflected in the Scratch editor
+5. Changes in the Scratch editor (adding blocks, changing sprites, adding costumes/sounds, etc.) are automatically saved to `~/Documents/Live Scratch/`
+
+### Menu
+
+- **File > Open SB3...** (`Ctrl+O`) — Load an existing `.sb3` file
+- **File > Export SB3...** (`Ctrl+S`) — Save the current project as `.sb3`
+- **File > Show Workspace in Explorer** (`Ctrl+Shift+O`) — Open `~/Documents/Live Scratch/` in File Explorer
 
 ## Setup (build from source)
 

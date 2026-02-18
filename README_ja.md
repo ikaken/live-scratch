@@ -4,6 +4,9 @@
 
 プロジェクトファイルとScratchエディタを双方向にライブ同期するデスクトップアプリ（Windows）。テキストエディタでsb3プロジェクトファイルを編集すると即座に反映され、Scratchエディタでの変更も自動的に書き戻されます。
 
+※本プロジェクトは、MacOS向けに公開されたオリジナル版を基に、Windows環境で利用できるようフォーク・改修したものです。バイブコーディングで実装しているのでご利用は自己責任でお願いします。
+
+
 ## Scratch x Vibe Coding
 
 [![YouTubeでデモを見る](https://img.youtube.com/vi/uoXJ0N3IdK0/maxresdefault.jpg)](https://www.youtube.com/watch?v=uoXJ0N3IdK0)
