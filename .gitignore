@@ -2,3 +2,4 @@ node_modules/
 scratch-editor/
 *.sb3
 src-tauri/target/
+src-tauri/gen/
